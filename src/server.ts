@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * MCP server exposing a tool to decode QR codes from either a data URL or an image URL.
  */
