@@ -40,33 +40,39 @@ Alternative using the global binary (after `npm i -g scan-qrcode-mcp`):
 }
 ```
 
-### Claude Desktop
+<details>
+<summary>Claude Desktop</summary>
 
-- Follow the MCP install guide: https://modelcontextprotocol.io/quickstart/user
-- Use one of the JSON configs above (name it `qrcode`).
+Follow the MCP install guide: https://modelcontextprotocol.io/quickstart/user
+Use the Standard config JSON above (name it `qrcode`).
 
-### Claude Code
+</details>
 
-Add the server via CLI (choose one):
+<details>
+<summary>Claude Code</summary>
+
+Use the Claude Code CLI to add the QR MCP server:
 
 ```bash
-# Using npx (no global install required)
 claude mcp add qrcode npx scan-qrcode-mcp@latest
-
-# Or using the global binary
-claude mcp add qrcode scan-qrcode-mcp
 ```
 
-### VS Code (GitHub Copilot with MCP)
+</details>
 
-- Follow: https://code.visualstudio.com/docs/copilot/chat/mcp-servers#_add-an-mcp-server
-- Or add via VS Code CLI (npx example):
+<details>
+<summary>VS Code (GitHub Copilot with MCP)</summary>
+
+Follow: https://code.visualstudio.com/docs/copilot/chat/mcp-servers#_add-an-mcp-server
+Or install via VS Code CLI (npx example):
 
 ```bash
 code --add-mcp '{"name":"qrcode","command":"npx","args":["scan-qrcode-mcp@latest"]}'
 ```
 
-### Codex CLI
+</details>
+
+<details>
+<summary>Codex CLI</summary>
 
 Edit `~/.codex/config.toml` and add one of the following:
 
@@ -83,12 +89,15 @@ or, if you installed globally:
 command = "scan-qrcode-mcp"
 ```
 
-### Cursor
+</details>
 
-- Settings -> MCP -> Add new MCP Server
-- Name: `qrcode`
-- Option A (recommended): `command` = `npx`, `args` = `["scan-qrcode-mcp@latest"]`
-- Option B (global): `command` = `scan-qrcode-mcp`, `args` = `[]`
+<details>
+<summary>Cursor</summary>
+
+Settings -> MCP -> Add new MCP Server.
+Name: `qrcode`. Either use `npx scan-qrcode-mcp@latest` or the global binary.
+
+</details>
 
 Notes:
 - Requires Node.js 18.17+.
