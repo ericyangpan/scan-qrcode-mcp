@@ -4,7 +4,9 @@ MCP server that decodes QR codes from either a data URL (base64) or an HTTP(S) i
 
 ## Features
 
-- Tool `decode_qrcode` accepts either `imageDataUrl` or `imageUrl`.
+- Two precise tools for decoding:
+  - `decode_qrcode_data_url` — accepts `imageDataUrl`
+  - `decode_qrcode_image_url` — accepts `imageUrl`
 - Decodes common image formats (PNG, JPEG, etc.).
 - Deterministic behavior with clear errors for invalid inputs.
 
@@ -128,22 +130,33 @@ tests/
 
 ## Usage
 
-The server uses stdio transport and exposes a single tool:
+The server uses stdio transport and exposes two tools:
 
-- Name: `decode_qrcode`
-- Input schema:
-  - Provide exactly one of:
-    - `imageDataUrl`: string — a `data:<mime>;base64,<data>` URL for the QR image
-    - `imageUrl`: string — an `http(s)` URL to the QR image
+- `decode_qrcode_data_url`
+  - Input: `{ imageDataUrl: string }` — `data:<mime>;base64,<data>` URL for the QR image
+- `decode_qrcode_image_url`
+  - Input: `{ imageUrl: string }` — `http(s)` URL to the QR image
 
-Example (pseudo-JSON-RPC over MCP):
+Examples (pseudo-JSON-RPC over MCP):
 
+Decode from data URL
 ```
 {
   "method": "tools/call",
   "params": {
-    "name": "decode_qrcode",
+    "name": "decode_qrcode_data_url",
     "arguments": { "imageDataUrl": "data:image/png;base64,..." }
+  }
+}
+```
+
+Decode from image URL
+```
+{
+  "method": "tools/call",
+  "params": {
+    "name": "decode_qrcode_image_url",
+    "arguments": { "imageUrl": "https://example.com/qr.png" }
   }
 }
 ```

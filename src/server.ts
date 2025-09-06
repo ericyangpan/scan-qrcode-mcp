@@ -15,7 +15,7 @@ import { decodeQr } from './services/qrcode-service.js';
 const server = new Server(
   {
     name: 'scan-qrcode-mcp',
-    version: '0.1.0',
+    version: '0.1.2',
   },
   {
     capabilities: {
@@ -27,16 +27,29 @@ const server = new Server(
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   const tools: ListToolsResult['tools'] = [
     {
-      name: 'decode_qrcode',
-      description:
-        'Decode a QR code from either a data URL (data:<mime>;base64,...) or an HTTP(S) image URL.',
+      name: 'decode_qrcode_data_url',
+      description: 'Decode a QR code from a data URL (data:<mime>;base64,...)',
       inputSchema: {
         type: 'object',
+        required: ['imageDataUrl'],
         properties: {
-          imageDataUrl: { type: 'string', description: 'Image data URL (base64) of the QR image.' },
+          imageDataUrl: {
+            type: 'string',
+            description: 'Image data URL (base64) of the QR image.',
+          },
+        },
+        additionalProperties: false,
+      },
+    },
+    {
+      name: 'decode_qrcode_image_url',
+      description: 'Decode a QR code from an HTTP(S) image URL',
+      inputSchema: {
+        type: 'object',
+        required: ['imageUrl'],
+        properties: {
           imageUrl: { type: 'string', description: 'HTTP(S) URL to the QR image.' },
         },
-        anyOf: [{ required: ['imageDataUrl'] }, { required: ['imageUrl'] }],
         additionalProperties: false,
       },
     },
@@ -45,28 +58,26 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (req: CallToolRequest) => {
-  if (req.params.name !== 'decode_qrcode') {
-    throw new Error(`Unknown tool: ${req.params.name}`);
-  }
+  const name = req.params.name;
   const args = (req.params.arguments ?? {}) as { imageDataUrl?: string; imageUrl?: string };
-  if (!args.imageDataUrl && !args.imageUrl) {
-    throw new Error('Provide either imageDataUrl or imageUrl');
-  }
-  if (args.imageDataUrl && args.imageUrl) {
-    throw new Error('Provide only one of imageDataUrl or imageUrl');
-  }
-  const result = await decodeQr(
-    args.imageDataUrl ? { imageDataUrl: args.imageDataUrl } : { imageUrl: args.imageUrl! },
-  );
 
-  return {
-    content: [
-      {
-        type: 'text',
-        text: result.text,
-      },
-    ],
-  };
+  if (name === 'decode_qrcode_data_url') {
+    if (!args.imageDataUrl || typeof args.imageDataUrl !== 'string') {
+      throw new Error('Missing required argument: imageDataUrl');
+    }
+    const result = await decodeQr({ imageDataUrl: args.imageDataUrl });
+    return { content: [{ type: 'text', text: result.text }] };
+  }
+
+  if (name === 'decode_qrcode_image_url') {
+    if (!args.imageUrl || typeof args.imageUrl !== 'string') {
+      throw new Error('Missing required argument: imageUrl');
+    }
+    const result = await decodeQr({ imageUrl: args.imageUrl });
+    return { content: [{ type: 'text', text: result.text }] };
+  }
+
+  throw new Error(`Unknown tool: ${name}`);
 });
 
 async function main() {
